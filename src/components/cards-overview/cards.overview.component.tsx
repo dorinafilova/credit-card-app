@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteChildrenProps } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { CardType } from '../../../utils';
+import { CardType } from '../../utils';
 
 import './cards.overview.styles.scss';
 

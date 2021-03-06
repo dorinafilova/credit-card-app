@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import CardInputForm from '../components/card-input-form/card.input.form.component';
+import CardInputForm from '../components/card-input-form/card.input.component';
 
 const AddCardPage = ({ cardItem }) => <CardInputForm card={cardItem} />
 
