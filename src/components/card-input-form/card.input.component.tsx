@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Cards from 'react-credit-cards';
 import { connect } from 'react-redux';
 import { addNewCard, editExistingCard } from '../../redux/cards/cards.actions';
@@ -17,52 +17,41 @@ type PropsType = RouteComponentProps & {
     card: CardType;
 }
 
-class CardInputForm extends React.Component<PropsType> {
-    state = this.populateInitialState();
+const CardInputForm: React.FC<PropsType> = props => {
+    const existingCardName = props.card && props.card.name;
+    const existingCardNumber = props.card && props.card.number;
+    const existingCardExpiry = props.card && props.card.expiry;
 
-    populateInitialState() {
-        if (this.props.card) {
-            return {
-                ...this.props.card
-            }
-        }
-        return {
-            expiry: '',
-            focused: '',
-            name: '',
-            number: '',
-            focus: '',
-            errorNumber: '',
-            errorExpiry: ''
-        }
-    }
+    const [name, setName] = useState(existingCardName || '');
+    const [number, setNumber] = useState(existingCardNumber || '');
+    const [focus, setFocus] = useState('');
+    const [expiry, setExpiry] = useState(existingCardExpiry || '');
+    const [errorNumber, setErrorNumber] = useState('');
+    const [errorExpiry, setErrorExpiry] = useState('');
 
-    handleInputFocus = (e) => {
-        this.setState({ focus: e.target.name });
-    }
+    const handleInputFocus = (e) => setFocus(e.target.name)
 
-    handleInputChange = (e) => {
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === 'number') {
-            this.validateCreditCard(name, value);
+            validateCreditCard(value);
         }
         else if (name === 'expiry') {
-            this.validateExpiryDate(name, value);
+            validateExpiryDate(value);
         }
         else {
-            this.setState({ [name]: value });
+            setName(e.target.value);
         }
 
     }
 
-    onClick = (e) => {
+    const onClick = (e) => {
         e.preventDefault();
 
-        const { cards, addNewCard, editExistingCard, card, history } = this.props;
-        const { name, number, expiry } = this.state;
+        const { cards, addNewCard, editExistingCard, card, history } = props;
 
         const cardObj: CardType = {
-            id: `card-${cards.length + 1}`,
+            id: card ? card.id : `card-${cards.length + 1}`,
             name,
             number,
             expiry
@@ -74,17 +63,17 @@ class CardInputForm extends React.Component<PropsType> {
 
     };
 
-    validateCreditCard = (name, value) => {
+    const validateCreditCard = value => {
         if (!validator.isCreditCard(value)) {
-            this.setState({ errorNumber: 'Wrong card number' });
-            this.setState({ [name]: value });
+            setErrorNumber('Wrong card number');
         }
         else {
-            this.setState({ [name]: value, errorNumber: '' });
+            setErrorNumber('');
         }
+        setNumber(value);
     }
 
-    validateExpiryDate = (name, value) => {
+    const validateExpiryDate = value => {
         const month = value.substring(0, 2);
         const year = value.substring(2, 6);
         const date = new Date(year, month, 0);
@@ -94,80 +83,69 @@ class CardInputForm extends React.Component<PropsType> {
 
 
         if (dateInput <= currentDate || month > 12) {
-            this.setState({ errorExpiry: 'Wrong date' });
-            this.setState({ [name]: value });
+            setErrorExpiry('Wrong date')
         }
         else {
-            this.setState({ [name]: value, errorExpiry: '' });
+            setErrorExpiry('');
         }
+        setExpiry(value);
     }
 
-    isEmptyForm() {
-        const { name, number, expiry } = this.state;
-
-        return name === '' || number === '' || expiry === '';
-    }
-
-    render() {
-        const { name, number, focus, expiry, errorNumber, errorExpiry } = this.state;
-        const title = this.props.card ? 'Edit card details' : 'Add card';
-
-        const disabled = this.isEmptyForm() || errorNumber || errorExpiry;
-        return (
-            <div className="card-input">
-                <div className="form-title">{title}</div>
-                <div className="card-number">
-                    <Cards
-                        cvc=""
-                        expiry={expiry}
-                        focused={focus}
-                        name={name}
-                        number={number}
+    const isEmptyForm = () => name === '' || number === '' || expiry === '';
+    return (
+        <div className="card-input">
+            <div className="form-title">{props.card ? 'Edit card details' : 'Add card'}</div>
+            <div className="card-number">
+                <Cards
+                    cvc=""
+                    expiry={expiry}
+                    focused={focus}
+                    name={name}
+                    number={number}
+                />
+            </div>
+            <form className="form">
+                <div className="form-field">
+                    <label htmlFor="name">Name</label>
+                    <input
+                        className="input"
+                        type="text"
+                        name="name"
+                        value={name}
+                        onChange={handleInputChange}
+                        onFocus={handleInputFocus}
                     />
                 </div>
-                <form className="form">
-                    <div className="form-field">
-                        <label htmlFor="name">Name</label>
-                        <input
-                            className="input"
-                            type="text"
-                            name="name"
-                            value={name}
-                            onChange={this.handleInputChange}
-                            onFocus={this.handleInputFocus}
-                        />
-                    </div>
-                    <div className="form-field">
-                        <label htmlFor="number">Card Number</label>
-                        <input
-                            className="input"
-                            type="tel"
-                            value={number}
-                            name="number"
-                            onChange={this.handleInputChange}
-                            onFocus={this.handleInputFocus}
-                            maxLength={16}
-                        />
-                        <span className="error">{errorNumber}</span>
-                    </div>
-                    <div className="form-field">
-                        <label htmlFor="expiry">Expires on</label>
-                        <input
-                            className="input"
-                            type="text"
-                            value={expiry}
-                            name="expiry"
-                            maxLength={6}
-                            onChange={this.handleInputChange}
-                            onFocus={this.handleInputFocus}
-                        />
-                        <span className="error">{errorExpiry}</span>
-                    </div>
-                    <button className={`btn-save ${disabled ? 'disabled' : ''}`} onClick={this.onClick}> Save</button>
-                </form>
-            </div>
-        )
-    }
+                <div className="form-field">
+                    <label htmlFor="number">Card Number</label>
+                    <input
+                        className="input"
+                        type="tel"
+                        value={number}
+                        name="number"
+                        onChange={handleInputChange}
+                        onFocus={handleInputFocus}
+                        maxLength={16}
+                    />
+                    <span className="error">{errorNumber}</span>
+                </div>
+                <div className="form-field">
+                    <label htmlFor="expiry">Expires on</label>
+                    <input
+                        className="input"
+                        type="text"
+                        value={expiry}
+                        name="expiry"
+                        maxLength={6}
+                        onChange={handleInputChange}
+                        onFocus={handleInputFocus}
+                    />
+                    <span className="error">{errorExpiry}</span>
+                </div>
+                <button className={`btn-save ${isEmptyForm() || errorNumber.length || errorExpiry.length ? 'disabled' :  ''}`} onClick={onClick}> Save</button>
+            </form>
+        </div>
+    )
 }
 
 const mapStateToProps = state => ({ cards: state.cards.cards });
