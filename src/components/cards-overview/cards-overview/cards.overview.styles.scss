@@ -1,0 +1,48 @@
+.cards-overview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .cards-title {
+    font-size: 36px;
+    color: slategrey;
+    padding-bottom: 20px;
+
+  }
+
+  .card-overview-item {
+    height: 50px;
+    border: 1px solid black;
+    width: 290px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: slategrey;
+    color: white;
+    cursor: pointer;
+    margin-bottom: 20px;
+
+    &:hover {
+      background: white;
+      color: slategrey;
+    }
+  }
+
+  .btn-add {
+    width: 100%;
+    margin-top: 40px;
+    background: dodgerblue;
+    color: white;
+    font-size: 20px;
+    height: 40px;
+    border: none;
+    width: 290px;
+    cursor: pointer;
+
+    &:hover {
+        background: white;
+        color: dodgerblue;
+        border: 1px solid dodgerblue;
+      }
+  }
+}

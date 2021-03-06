@@ -1,0 +1,54 @@
+.card-input {
+  .form-title {
+    text-align: center;
+    font-size: 36px;
+    color: black;
+    padding-bottom: 20px;
+    margin: 0 auto;
+    width: 290px;
+  }
+
+  .form {
+    width: 290px;
+    margin: 0 auto;
+    padding: 20px 0;
+
+    .form-field {
+      margin-top: 20px;
+
+      .input {
+        display: block;
+        height: 20px;
+        margin-top: 10px;
+        width: 100%;
+      }
+    }
+
+    .btn-save {
+      width: 100%;
+      margin-top: 40px;
+      background: dodgerblue;
+      color: white;
+      font-size: 20px;
+      height: 40px;
+      border: none;
+      width: 290px;
+      cursor: pointer;
+
+      &:hover {
+        background: white;
+        color: dodgerblue;
+        border: 1px solid dodgerblue;
+      }
+    }
+
+    .disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    }
+
+    .error {
+      color: red;
+    }
+  }
+}
